@@ -1,4 +1,4 @@
-
+import aspectRatio from "@tailwindcss/aspect-ratio";
 
 export default {
   content: [
@@ -6,8 +6,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#28194b',
+        // primary: '#7D49F8',
+      }
+    }
   },
-  plugins: [],
-}
+  plugins: [aspectRatio],
+};
+
 

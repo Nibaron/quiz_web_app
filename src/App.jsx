@@ -1,10 +1,26 @@
+import { Routes, Route } from 'react-router-dom';
+
+import HomePage from './pages/home-page';
+import ProfilePage from './pages/test';
+import LoginPage from './pages/login-page';
+import RegistrationPage from './pages/registration-page';
+import NotFoundPage from './pages/not-found-page';
+import PrivateRoutes from './routes/private-routes';
 
 function App() {
 
   return (
-    <h1 className="text-3xl text-center font-bold underline">
-      Hello world!
-    </h1>
+    <>
+      <Routes>
+        <Route element={<PrivateRoutes />}>
+          <Route element={<HomePage />} path="/" exact />
+          <Route element={<ProfilePage />} path="/me" />
+        </Route>
+        <Route element={<LoginPage />} path="/login" />
+        <Route element={<RegistrationPage />} path="/register" />
+        <Route element={<NotFoundPage />} path="*" />
+      </Routes>
+    </>
   )
 }
 
