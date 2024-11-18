@@ -1,17 +1,18 @@
 import { useAuth } from "../hooks/useAuth";
 import { Outlet, Navigate } from "react-router-dom";
-import Header from "../components/common/header";
+import Header from "../components/layouts/header";
 const PrivateRoutes = () => {
+
     const { auth } = useAuth();
 
     return (
         <>
             {
-                auth ? (
+                auth?.authToken ? (
                     <>
-                        <Header />
-                        <main className="mx-auto max-w-[1020px] py-8">
-                            <div className="container">
+                        <main className="bg-[#F5F3FF] min-h-screen">
+                            <div className="container mx-auto py-3">
+                                <Header />
                                 <Outlet />
                             </div>
                         </main>
