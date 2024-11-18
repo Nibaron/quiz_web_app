@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import backGround1 from '../assets/backgrounds/1.jpeg';
 import Welcome from '../components/welcome';
 import Header from '../components/layouts/header';
+import Footer from '../components/layouts/footer';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const HomePage = () => {
 
                 <main className="bg-white p-6 rounded-md h-full">
                     <section>
-                        <h3 className="text-2xl font-bold mb-6" onClick={() => navigate("/")}>Participate In Quizees</h3>
+                        <h3 className="text-2xl font-bold mb-6" onClick={() => navigate("/test")}>Participate In Quizees</h3>
 
                         {/**  Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -98,6 +99,7 @@ const HomePage = () => {
                         </div>
                     </section>
                 </main>
+                <Footer />
             </div>
         </main>
     )

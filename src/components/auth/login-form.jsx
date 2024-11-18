@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 import axios from "axios";
+import { useState } from "react";
 
 const LoginForm = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
     const { setAuth } = useAuth();
 
@@ -29,7 +31,8 @@ const LoginForm = () => {
                     console.log(`Login time auth token: ${authToken}`);
                     setAuth({ user, authToken, refreshToken });
 
-                    navigate("/");
+                    if (isAdmin) navigate("/dashboard");
+                    else navigate("/");
                 }
             }
         } catch (error) {
@@ -44,22 +47,19 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(submitForm)} >
             <div className="mb-4">
-                <Field label="Enter your username or email address" error={errors.email}>
+                <Field label="Enter your username or email address" htmlFor={"loginEmail"} error={errors.loginEmail}>
                     <input
                         {...register("email", { required: "Email ID is Required" })}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.loginEmail ? "border-red-500" : "border-gray-300"
                             }`}
                         type="email"
-                        name="email"
-                        id="email"
-                        value="saad@learnwithsumit.com"
                         placeholder="Username or email address"
                     />
                 </Field>
             </div>
 
             <div className="mb-6">
-                <Field label="Enter your Password" error={errors.password}>
+                <Field label="Enter your Password" htmlFor={"loginPassword"} error={errors.loginPassword}>
                     <input
                         {...register("password", {
                             required: "Password is required",
@@ -68,19 +68,17 @@ const LoginForm = () => {
                                 message: "Your password must be at least 8 characters",
                             },
                         })}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.loginPassword ? "border-red-500" : "border-gray-300"
                             }`}
                         type="password"
-                        name="password"
-                        id="password"
-                        value='password123'
+                        id="loginPassword"
                         placeholder="Password"
                     />
                 </Field>
             </div>
 
             <div className="mb-6 flex gap-2 items-center">
-                <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" />
+                <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" checked={isAdmin} onChange={() => setIsAdmin(!isAdmin)} />
                 <label htmlFor="admin" className="block ">Login as Admin</label>
             </div>
             <p>{errors?.root?.random?.message}</p>
