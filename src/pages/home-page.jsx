@@ -5,20 +5,22 @@ import backGround1 from '../assets/backgrounds/1.jpeg';
 import Welcome from '../components/welcome';
 import Header from '../components/layouts/header';
 import Footer from '../components/layouts/footer';
+import { useState } from 'react';
 
 const HomePage = () => {
     const navigate = useNavigate();
     const { auth } = useAuth();
+    const [role] = useState(auth?.user?.role ?? "guest");
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen">
             <div className="container mx-auto py-3">
                 <Header />
-                {auth?.user && <Welcome />}
+                {role === 'user' && <Welcome />}
 
                 <main className="bg-white p-6 rounded-md h-full">
                     <section>
-                        <h3 className="text-2xl font-bold mb-6" onClick={() => navigate("/test")}>Participate In Quizees</h3>
+                        <h3 className="text-2xl font-bold mb-6" onClick={() => navigate("/admin/dashboard")}>Participate In Quizees</h3>
 
                         {/**  Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">

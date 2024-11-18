@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const Field = ({ label, children, htmlFor, error }) => {
     const id = htmlFor || getChildId(children);
@@ -19,4 +19,4 @@ const getChildId = (children) => {
     }
 };
 
-export default Field
+export default Field;

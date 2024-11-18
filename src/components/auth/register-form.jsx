@@ -36,24 +36,26 @@ export default function RegisterForm() {
     return (
         <form onSubmit={handleSubmit(submitForm)} >
             <div className="mb-4">
-                <Field label="Full Name" htmlFor={"full_name"} error={errors.name}>
+                <Field label="Full Name" error={errors.name}>
                     <input
                         {...register("full_name", { required: "Name is Required" })}
                         className={`w-full px-4 py-3 rounded-lg border ${errors.name ? "border-red-500" : "border-gray-300"
                             }`}
                         type="text"
+                        id="full_name"
                         placeholder="John Doe"
                     />
                 </Field>
             </div>
 
             <div className="mb-4">
-                <Field label="Email" htmlFor={"email"} error={errors.email}>
+                <Field label="Email" error={errors.email}>
                     <input
                         {...register("email", { required: "Email is Required" })}
                         className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
                             }`}
                         type="email"
+                        id="email"
                         placeholder="Email address"
                     />
                 </Field>
@@ -61,7 +63,7 @@ export default function RegisterForm() {
 
             <div className="flex gap-4">
                 <div className="mb-6">
-                    <Field label="Enter your Password" htmlFor={"registerPassword"} error={errors.password}>
+                    <Field label="Enter your Password" error={errors.password}>
                         <input
                             {...register("password", {
                                 required: "Password is required",
@@ -80,7 +82,7 @@ export default function RegisterForm() {
                 </div>
 
                 <div className="mb-6">
-                    <Field label="Confirm Password" htmlFor={"confirmPassword"} error={errors.confirmPassword}>
+                    <Field label="Confirm Password" error={errors.confirmPassword}>
                         <input
                             {...register("confirmPassword", {
                                 required: "Please confirm your password",
@@ -101,7 +103,7 @@ export default function RegisterForm() {
 
             <div className="mb-6 flex gap-2 items-center">
                 <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" />
-                <label htmlFor="admin" className="block ">Register as Admin</label>
+                <label id="admin" className="block ">Register as Admin</label>
             </div>
             {errors.email && <p role="alert" className="text-red-600">{errors.email.message}</p>}
             <Field>

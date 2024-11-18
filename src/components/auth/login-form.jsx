@@ -31,7 +31,7 @@ const LoginForm = () => {
                     console.log(`Login time auth token: ${authToken}`);
                     setAuth({ user, authToken, refreshToken });
 
-                    if (isAdmin) navigate("/dashboard");
+                    if (isAdmin) navigate("/admin/dashboard");
                     else navigate("/");
                 }
             }
@@ -47,19 +47,20 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(submitForm)} >
             <div className="mb-4">
-                <Field label="Enter your username or email address" htmlFor={"loginEmail"} error={errors.loginEmail}>
+                <Field label="Enter your username or email address" error={errors.email}>
                     <input
                         {...register("email", { required: "Email ID is Required" })}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.loginEmail ? "border-red-500" : "border-gray-300"
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
                             }`}
                         type="email"
+                        id="email"
                         placeholder="Username or email address"
                     />
                 </Field>
             </div>
 
             <div className="mb-6">
-                <Field label="Enter your Password" htmlFor={"loginPassword"} error={errors.loginPassword}>
+                <Field label="Enter your Password" error={errors.password}>
                     <input
                         {...register("password", {
                             required: "Password is required",
@@ -68,10 +69,10 @@ const LoginForm = () => {
                                 message: "Your password must be at least 8 characters",
                             },
                         })}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.loginPassword ? "border-red-500" : "border-gray-300"
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
                             }`}
                         type="password"
-                        id="loginPassword"
+                        id="password"
                         placeholder="Password"
                     />
                 </Field>
@@ -81,7 +82,7 @@ const LoginForm = () => {
                 <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" checked={isAdmin} onChange={() => setIsAdmin(!isAdmin)} />
                 <label htmlFor="admin" className="block ">Login as Admin</label>
             </div>
-            <p>{errors?.root?.random?.message}</p>
+            <p className="text-red-600">{errors?.root?.random?.message}</p>
             <Field>
                 <button type="submit" className="w-full bg-primary text-white py-3 rounded-lg mb-4">Sign in</button>
             </Field>
