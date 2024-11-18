@@ -13,7 +13,7 @@ const HomePage = () => {
     const [role] = useState(auth?.user?.role ?? "guest");
 
     return (
-        <main className="bg-[#F5F3FF] min-h-screen">
+        <body className="bg-[#F5F3FF] min-h-screen">
             <div className="container mx-auto py-3">
                 <Header />
                 {role === 'user' && <Welcome />}
@@ -24,7 +24,8 @@ const HomePage = () => {
 
                         {/**  Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <Link to="/"
+
+                            <Link to="/result_page"
                                 className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] relative group cursor-pointer">
                                 <div
                                     className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
@@ -35,6 +36,7 @@ const HomePage = () => {
                                         foundational
                                         programming skills</p>
                                 </div>
+                                {/**already Participated */}
                                 <div
                                     className="hidden absolute transition-all bg-black/80 w-full h-full left-0 top-0 text-white group-hover:grid place-items-center">
                                     <div>
@@ -47,7 +49,7 @@ const HomePage = () => {
                                     className="w-full h-full object-cover rounded mb-4" />
                             </Link>
 
-                            <Link to="/"
+                            <Link to="/quiz_page"
                                 className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative">
                                 <div
                                     className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
@@ -103,7 +105,7 @@ const HomePage = () => {
                 </main>
                 <Footer />
             </div>
-        </main>
+        </body >
     )
 }
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Outlet, Navigate } from "react-router-dom";
 
-const PrivateRoutes = () => {
+const AdminRoutes = () => {
 
     const { auth } = useAuth();
     const [role] = useState(auth?.user?.role);
@@ -10,10 +10,10 @@ const PrivateRoutes = () => {
     return (
         <>
             {
-                role === 'user' ? <Outlet /> : <Navigate to="/login" />
+                role === 'admin' ? <Outlet /> : <Navigate to="/unauthorized" />
             }
         </>
     )
 }
 
-export default PrivateRoutes;
+export default AdminRoutes;
