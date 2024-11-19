@@ -24,7 +24,6 @@ function App() {
 
         {/** user Route */}
         <Route element={<PrivateRoutes />}>
-          <Route element={<Dashboard />} path='/admin/dashboard' />
           <Route element={<LeaderBoardPage />} path='/leaderboard_page' />
           <Route element={<QuizPage />} path='/quiz_page' />
           <Route element={<ResultPage />} path='/result_page' />

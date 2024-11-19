@@ -10,7 +10,8 @@ const PrivateRoutes = () => {
     return (
         <>
             {
-                role === 'user' ? <Outlet /> : <Navigate to="/login" />
+                role === 'user' ? <Outlet /> :
+                    role === 'admin' ? <Navigate to="/unauthorized" /> : <Navigate to="/login" />
             }
         </>
     )

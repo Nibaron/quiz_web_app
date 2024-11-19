@@ -5,12 +5,51 @@ import backGround1 from '../assets/backgrounds/1.jpeg';
 import Welcome from '../components/welcome';
 import Header from '../components/layouts/header';
 import Footer from '../components/layouts/footer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import QuizCard from '../components/cards/quiz-card';
 
 const HomePage = () => {
     const navigate = useNavigate();
     const { auth } = useAuth();
     const [role] = useState(auth?.user?.role ?? "guest");
+
+    const [quizData, setQuizData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const fetchQuizData = async () => {
+            try {
+                setLoading(true);
+
+                const url = "http://localhost:5000/api/quizzes";
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Fetching quiz data failed");
+                }
+
+                const data = await response.json();
+                const formattedData = data?.data.map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    thumbnail: item.thumbnail,
+                    is_attempted: item.is_attempted
+                }));
+                setQuizData(formattedData);
+            } catch (err) {
+                console.error("Error:", err.message);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchQuizData();
+    }, []);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error...</p>;
 
     return (
         <body className="bg-[#F5F3FF] min-h-screen">
@@ -49,20 +88,18 @@ const HomePage = () => {
                                     className="w-full h-full object-cover rounded mb-4" />
                             </Link>
 
-                            <Link to="/quiz_page"
-                                className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative">
-                                <div
-                                    className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
-                                    <h1 className=" text-5xl" style={{ fontFamily: 'Jaro' }}>JavaScript Basic Quiz</h1>
-                                    <p className="mt-2 text-lg">Test your knowledge of JavaScript basics with quizzes that cover essential
-                                        concepts,
-                                        syntax, and
-                                        foundational
-                                        programming skills</p>
-                                </div>
-                                <img src={backGround1} alt="JavaScript Hoisting"
-                                    className="w-full h-full object-cover rounded mb-4 transition-all " />
-                            </Link>
+                            {
+                                quizData.map(quiz => (
+                                    <QuizCard
+                                        key={quiz.id}
+                                        id={quiz.id}
+                                        title={quiz.title}
+                                        details={quiz.description}
+                                        backgroundImg={quiz.thumbnail}
+                                        is_attempted={quiz.is_attempted}
+                                    />
+                                ))
+                            }
 
                             <div
                                 className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative">
