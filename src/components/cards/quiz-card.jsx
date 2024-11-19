@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { QuizIdContext } from "../../context";
 
 export default function QuizCard({ id, title, details, backgroundImg, is_attempted }) {
 
     const linkDestination = is_attempted ? "/result_page" : "/quiz_page";
+    const { setQuizId } = useContext(QuizIdContext);
 
     return (
         <Link to={linkDestination}
             className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative"
-            onClick={() => console.log(id)}
+            onClick={() => setQuizId(id)}
         >
             <div
                 className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">

@@ -1,17 +1,19 @@
 import Logo from '../assets/logo.svg';
 import Avatar from '../assets/avater.webp';
 import Footer from '../components/layouts/footer';
-import { useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import useAxios from '../hooks/useAxios';
 import { initialState, QuizReducer } from '../reducers/attend-quiz-reducer';
 import { actions } from '../actions';
 import { Link } from 'react-router-dom';
+import { QuizIdContext } from '../context';
 
 
 export default function QuizPage() {
     const { auth } = useAuth();
     const { api } = useAxios();
+    const { quizId } = useContext(QuizIdContext);
     const [state, dispatch] = useReducer(QuizReducer, initialState);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [givenAnswer, setGivenAnswer] = useState("");
@@ -22,7 +24,7 @@ export default function QuizPage() {
         const fetchQuiz = async () => {
             try {
                 const response = await api.get(
-                    `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/287e6049-9e59-49ea-bb41-9a0387dce648`
+                    `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}`
                 );
                 if (response.status === 200) {
                     dispatch({
