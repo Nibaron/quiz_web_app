@@ -7,6 +7,7 @@ import Header from '../components/layouts/header';
 import Footer from '../components/layouts/footer';
 import { useEffect, useState } from 'react';
 import QuizCard from '../components/cards/quiz-card';
+import axios from 'axios';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -21,23 +22,10 @@ const HomePage = () => {
         const fetchQuizData = async () => {
             try {
                 setLoading(true);
-
-                const url = "http://localhost:5000/api/quizzes";
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error("Fetching quiz data failed");
+                const response = await axios.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes`);
+                if (response.status === 200) {
+                    setQuizData(response?.data?.data);
                 }
-
-                const data = await response.json();
-                const formattedData = data?.data.map((item) => ({
-                    id: item.id,
-                    title: item.title,
-                    description: item.description,
-                    thumbnail: item.thumbnail,
-                    is_attempted: item.is_attempted
-                }));
-                setQuizData(formattedData);
             } catch (err) {
                 console.error("Error:", err.message);
                 setError(err.message);
@@ -91,12 +79,12 @@ const HomePage = () => {
                             {
                                 quizData.map(quiz => (
                                     <QuizCard
-                                        key={quiz.id}
-                                        id={quiz.id}
-                                        title={quiz.title}
-                                        details={quiz.description}
-                                        backgroundImg={quiz.thumbnail}
-                                        is_attempted={quiz.is_attempted}
+                                        key={quiz?.id}
+                                        id={quiz?.id}
+                                        title={quiz?.title}
+                                        details={quiz?.description}
+                                        backgroundImg={quiz?.thumbnail}
+                                        is_attempted={quiz?.is_attempted}
                                     />
                                 ))
                             }
