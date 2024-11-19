@@ -14,7 +14,7 @@ export default function RegisterForm() {
         watch,
     } = useForm();
 
-    const password = watch('registerPassword');
+    const password = watch('password');
     const submitForm = async (formData) => {
         try {
             //console.log(formData)
@@ -22,7 +22,7 @@ export default function RegisterForm() {
                 `${import.meta.env.VITE_SERVER_BASE_URL}/auth/register`, formData
             );
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 navigate("/login");
             }
         } catch (error) {
@@ -75,7 +75,7 @@ export default function RegisterForm() {
                             className={`w-full px-4 py-3 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
                                 }`}
                             type="password"
-                            id="registerPassword"
+                            id="password"
                             placeholder="Password"
                         />
                     </Field>
