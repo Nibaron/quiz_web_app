@@ -1,4 +1,5 @@
 import { actions } from "../actions";
+import { shuffleArray } from "../utils/common-functions";
 
 const initialState = {
     quizData: [],
@@ -16,9 +17,20 @@ const QuizReducer = (state, action) => {
         }
 
         case actions.quiz.DATA_FETCHED: {
+            const shuffledQuizData = {
+                ...action.data,
+                data: {
+                    ...action.data.data,
+                    questions: action.data.data.questions.map((question) => ({
+                        ...question,
+                        options: shuffleArray([...question.options]),
+                    })),
+                },
+            };
+
             return {
                 ...state,
-                quizData: action.data,
+                quizData: shuffledQuizData,
                 loading: false,
             };
         }
