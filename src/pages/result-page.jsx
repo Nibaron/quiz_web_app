@@ -1,27 +1,81 @@
 import { Link } from 'react-router-dom';
 import LogoWhite from '../assets/logo-white.svg';
 import CircularProgressbar from '../assets/circular-progressbar.svg';
+import { useContext, useEffect, useState } from 'react';
+import { QuizIdContext } from '../context';
+import useAxios from '../hooks/useAxios';
+import Question from '../components/common/question';
+import { useAuth } from '../hooks/useAuth';
 
 export default function ResultPage() {
+    const { quizId } = useContext(QuizIdContext);
+    const [questionsData, setQuestionsData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const { api } = useAxios();
+    const { auth } = useAuth();
+
+    //fetch attempted quiz result Data
+    useEffect(() => {
+        const fetchResultData = async () => {
+            try {
+                setLoading(true);
+                const [response1, response2] = await Promise.all([
+                    api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempts`),
+                    api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}`),
+                ]);
+                if (response1.status === 200 && response2.status === 200) {
+
+                    // Push the submitted answer field to the specific question
+                    const submitted_answers = response1?.data?.data?.attempts.filter(attempt => attempt.user.full_name === auth?.user?.full_name)?.[0].submitted_answers;
+
+                    const updatedQuestions = response2?.data?.data?.questions.map((question) => {
+                        const submittedAnswer = submitted_answers?.find(
+                            (attempt) => attempt.question_id === question.id
+                        )?.answer;
+                        return { ...question, submittedAnswer };
+                    });
+
+                    setQuestionsData({
+                        quiz: response1?.data?.data?.quiz,
+                        questions: updatedQuestions,
+                    });
+                }
+            } catch (err) {
+                console.error("Error:", err.message);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchResultData();
+    }, [quizId, api, auth]);
+
+    console.log(questionsData)
+
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error...</p>;
+
     return (
         <body className="bg-background text-foreground min-h-screen">
             <div className="flex min-h-screen overflow-hidden">
-                <img src={LogoWhite} className="max-h-11 fixed left-6 top-6 z-50" />
+                <Link to="/"><img src={LogoWhite} className="max-h-11 fixed left-6 top-6 z-50" /></Link>
                 {/** Left side */}
                 <div className="max-h-screen overflow-hidden hidden lg:flex lg:w-1/2 bg-primary flex-col justify-center p-12 relative">
                     <div>
                         <div className="text-white">
                             <div>
-                                <h2 className="text-4xl font-bold mb-2">React Hooks Quiz
+                                <h2 className="text-4xl font-bold mb-2">{questionsData?.quiz?.title}
                                 </h2>
-                                <p>A quiz on React hooks like useState, useEffect, and useContext. </p>
+                                <p>{questionsData?.quiz?.description} </p>
                             </div>
 
                             <div className="my-6 flex items-center  ">
                                 <div className="w-1/2">
                                     <div className="flex gap-6 my-6">
                                         <div>
-                                            <p className="font-semibold text-2xl my-0">10</p>
+                                            <p className="font-semibold text-2xl my-0">{questionsData?.quiz?.total_questions}</p>
                                             <p className="text-gray-300">Questions</p>
                                         </div>
 
@@ -60,102 +114,16 @@ export default function ResultPage() {
                 <div className="max-h-screen md:w-1/2 flex items-center justify-center h-full p-8">
                     <div className="h-[calc(100vh-50px)] overflow-y-scroll ">
                         <div className="px-4">
-                            {/** Question One */}
-                            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-                                <div className="bg-white p-6 !pb-2">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-semibold">
-                                            1. Which of the following is NOT a binary tree traversal method?
-                                        </h3>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer1" className="form-radio text-buzzr-purple" checked />
-                                            <span>Inorder</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer1" className="form-radio text-buzzr-purple" />
-                                            <span>Preorder</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer1" className="form-radio text-buzzr-purple" />
-                                            <span>Postorder</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer1" className="form-radio text-buzzr-purple" />
-                                            <span>Crossorder</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                                    <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                                    <button className="text-primary hover:text-primary/80 font-medium">Edit Question</button>
-                                </div>
-                            </div>
-
-                            {/** Question Two */}
-                            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-                                <div className="bg-white p-6 !pb-2">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-semibold">
-                                            2. What is the maximum number of nodes at level &apos;L&apos; in a binary tree?
-                                        </h3>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer2" className="form-radio text-buzzr-purple" checked />
-                                            <span>2^L</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer2" className="form-radio text-buzzr-purple" />
-                                            <span>L</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer2" className="form-radio text-buzzr-purple" />
-                                            <span>2^(L-1)</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer2" className="form-radio text-buzzr-purple" />
-                                            <span>2L</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                                    <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                                    <button className="text-primary hover:text-primary/80 font-medium">Edit Question</button>
-                                </div>
-                            </div>
-
-                            {/** Question 3 */}
-                            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-                                <div className="bg-white p-6 !pb-2">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-semibold">3. What is the height of an empty binary tree?</h3>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer3" className="form-radio text-buzzr-purple" checked />
-                                            <span>0</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer3" className="form-radio text-buzzr-purple" />
-                                            <span>-1</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer3" className="form-radio text-buzzr-purple" />
-                                            <span>1</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3">
-                                            <input type="radio" name="answer3" className="form-radio text-buzzr-purple" />
-                                            <span>Undefined</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                                    <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                                    <button className="text-primary hover:text-primary/80 font-medium">Edit Question</button>
-                                </div>
-                            </div>
+                            {questionsData?.questions?.map((questionData, idx) => (
+                                <Question
+                                    index={idx + 1}
+                                    key={idx}
+                                    title={questionData?.question}
+                                    options={questionData?.options}
+                                    answer={questionData?.correctAnswer}
+                                    submitted_answer={questionData?.submittedAnswer}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>

@@ -144,7 +144,8 @@ export default function QuizPage() {
                                     </button>
                                 )
                                     :
-                                    (<button
+                                    (<Link
+                                        to="/result_page"
                                         className="w-1/2 text-center ml-auto block bg-red-700 text-white py-2 px-4 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
                                         onClick={() => {
                                             const updatedAnswers = [
@@ -159,7 +160,7 @@ export default function QuizPage() {
 
                                     >
                                         Submit
-                                    </button>
+                                    </Link>
 
                                     )}
                             </div>

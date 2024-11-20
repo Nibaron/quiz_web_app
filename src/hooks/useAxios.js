@@ -37,15 +37,16 @@ const useAxios = () => {
                             `${import.meta.env.VITE_SERVER_BASE_URL}/auth/refresh-token`,
                             { refreshToken }
                         );
-                        const { tokens } = response.data;
+                        const { accessToken } = response.data.data;
 
                         //console.log(`New Token: ${token}`);
-                        setAuth({ ...auth, authToken: tokens.accessToken, refreshToken: tokens.refreshToken })
+                        setAuth({ ...auth, authToken: accessToken })
 
                         // Retry the original request with the new token
-                        originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
+                        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
                         return axios(originalRequest);
                     } catch (error) {
+                        setAuth({});
                         throw error;
                     }
                 }
