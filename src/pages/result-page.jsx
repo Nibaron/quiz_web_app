@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import LogoWhite from '../assets/logo-white.svg';
-import CircularProgressbar from '../assets/circular-progressbar.svg';
 import { useContext, useEffect, useState } from 'react';
 import { QuizIdContext } from '../context';
 import useAxios from '../hooks/useAxios';
 import Question from '../components/common/question';
 import { useAuth } from '../hooks/useAuth';
+import CircularProgressBar from '../components/circular-progress-bar';
 
 export default function ResultPage() {
     const { quizId } = useContext(QuizIdContext);
@@ -36,9 +36,26 @@ export default function ResultPage() {
                         return { ...question, submittedAnswer };
                     });
 
+                    // Calculate correct, wrong, and total marks
+                    let correct = 0;
+                    let wrong = 0;
+                    let marks = 0;
+
+                    updatedQuestions.forEach((question) => {
+                        if (question.submittedAnswer === question.correctAnswer) {
+                            correct++;
+                            marks += question.marks;
+                        } else {
+                            wrong++;
+                        }
+                    });
+
                     setQuestionsData({
                         quiz: response1?.data?.data?.quiz,
                         questions: updatedQuestions,
+                        correct,
+                        wrong,
+                        marks
                     });
                 }
             } catch (err) {
@@ -51,7 +68,7 @@ export default function ResultPage() {
         fetchResultData();
     }, [quizId, api, auth]);
 
-    console.log(questionsData)
+    //console.log(questionsData)
 
 
     if (loading) return <p>Loading...</p>;
@@ -80,12 +97,12 @@ export default function ResultPage() {
                                         </div>
 
                                         <div>
-                                            <p className="font-semibold text-2xl my-0">8</p>
+                                            <p className="font-semibold text-2xl my-0">{questionsData?.correct}</p>
                                             <p className="text-gray-300">Correct</p>
                                         </div>
 
                                         <div>
-                                            <p className="font-semibold text-2xl my-0">2</p>
+                                            <p className="font-semibold text-2xl my-0">{questionsData?.wrong}</p>
                                             <p className="text-gray-300">Wrong</p>
                                         </div>
                                     </div>
@@ -98,11 +115,12 @@ export default function ResultPage() {
 
                                 <div className="w-1/2 bg-primary/80 rounded-md border border-white/20 flex items-center p-4">
                                     <div className="flex-1">
-                                        <p className="text-2xl font-bold">5/10</p>
+                                        <p className="text-2xl font-bold">{`${questionsData?.marks}/${questionsData?.quiz?.total_marks}`}</p>
                                         <p>Your Mark</p>
                                     </div>
                                     <div>
-                                        <img src={CircularProgressbar} className="h-20" />
+                                        <CircularProgressBar percentage={(questionsData?.marks * 100 / questionsData?.quiz?.total_marks).toFixed(2)} />
+
                                     </div>
                                 </div>
                             </div>
