@@ -2,8 +2,10 @@ import Field from "../common/fields";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
 
 export default function RegisterForm() {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -18,8 +20,9 @@ export default function RegisterForm() {
     const submitForm = async (formData) => {
         try {
             //console.log(formData)
+            const payload = isAdmin ? { ...formData, role: 'admin' } : formData;
             const response = await axios.post(
-                `${import.meta.env.VITE_SERVER_BASE_URL}/auth/register`, formData
+                `${import.meta.env.VITE_SERVER_BASE_URL}/auth/register`, payload
             );
 
             if (response.status === 201) {
@@ -70,8 +73,8 @@ export default function RegisterForm() {
                             {...register("password", {
                                 required: "Password is required",
                                 minLength: {
-                                    value: 8,
-                                    message: "Your password must be at least 8 characters",
+                                    value: 6,
+                                    message: "Your password must be at least 6 characters",
                                 },
                             })}
                             className={`w-full px-4 py-3 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
@@ -106,7 +109,7 @@ export default function RegisterForm() {
 
 
             <div className="mb-6 flex gap-2 items-center">
-                <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" />
+                <input type="checkbox" id="admin" className="px-4 py-3 rounded-lg border border-gray-300" checked={isAdmin} onChange={() => setIsAdmin(!isAdmin)} />
                 <label id="admin" className="block ">Register as Admin</label>
             </div>
             {errors.email && <p role="alert" className="text-red-600">{errors.email.message}</p>}

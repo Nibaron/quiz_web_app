@@ -46,14 +46,14 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(submitForm)} >
             <div className="mb-4">
-                <Field label="Enter your username or email address" error={errors.email}>
+                <Field label="Enter your email address" error={errors.email}>
                     <input
                         {...register("email", { required: "Email ID is Required" })}
                         className={`w-full px-4 py-3 rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
                             }`}
                         type="email"
                         id="email"
-                        placeholder="Username or email address"
+                        placeholder="email address"
                         autoComplete="email"
                     />
                 </Field>
@@ -65,8 +65,8 @@ const LoginForm = () => {
                         {...register("password", {
                             required: "Password is required",
                             minLength: {
-                                value: 8,
-                                message: "Your password must be at least 8 characters",
+                                value: 6,
+                                message: "Your password must be at least 6 characters",
                             },
                         })}
                         className={`w-full px-4 py-3 rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
