@@ -1,39 +1,64 @@
 import Sidebar from '../../components/admin-components/sidebar';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { QuizIdContext } from '../../context';
 import AdminQuestionCard from '../../components/admin-components/admin-question-card';
+import useAxios from '../../hooks/useAxios';
+import { NextIcon } from '../../assets/icons';
 
 
 export default function QuizSetEntryPage() {
     const { quizId } = useContext(QuizIdContext);
-    const [adminQuestionsData] = useState([{
-        "index": "1",
-        "question": "Which of the following is NOT a binary tree traversal method?",
-        "options": ["Inorder", "Preorder", "Postorder", "Crossorder"],
-        "correctAnswer": "Preorder",
-    }]);
+    const { api } = useAxios();
+    const [adminQuestionsData, setAdminQuestionsData] = useState([]);
+    const [status, setStatus] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0);
     const [singleQuestion, setSingleQuestion] = useState({
         "question": "",
         "options": ["", "", "", ""],
         "correctAnswer": "#",
     })
 
-    console.log(singleQuestion);
+    useEffect(() => {
+        const fetchQuizData = async () => {
+            try {
+                const { data, status } = await api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/admin/quizzes`);
+
+                if (status === 200) {
+                    const filteredData = data.find(quiz => quiz.id === quizId);
+                    setAdminQuestionsData(filteredData);
+                    setStatus(filteredData?.status);
+                }
+            } catch (err) {
+                console.error("Error fetching quiz data:", err);
+            }
+        };
+        fetchQuizData();
+    }, [api, quizId, refreshKey]);
+
+    const handleDelete = async (questionId) => {
+        try {
+            const { status } = await api.delete(`${import.meta.env.VITE_SERVER_BASE_URL}/admin/questions/${questionId}`);
+            if (status === 200) {
+                setRefreshKey(prev => prev + 1);
+            }
+        } catch (err) {
+            console.error("Error deleting quiz question:", err);
+        }
+    }
+
+    console.log(status);
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen flex">
             <Sidebar />
 
             <section className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8">
-                <div>
+                <div >
                     <nav className="text-sm mb-4" aria-label="Breadcrumb">
                         <ol className="list-none p-0 inline-flex">
                             <li className="flex items-center">
                                 <a href="#" className="text-gray-600 hover:text-buzzr-purple">Home</a>
-                                <svg className="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path
-                                        d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" />
-                                </svg>
+                                <NextIcon />
                             </li>
                             <li>
                                 <a href="#" className="text-gray-600 hover:text-buzzr-purple" aria-current="page">Quizzes</a>
@@ -44,12 +69,12 @@ export default function QuizSetEntryPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 lg:gap-12">
                         {/** Left Column */}
                         <div className="">
-                            <h2 className="text-3xl font-bold mb-4">Binary Tree Quiz</h2>
+                            <h2 className="text-3xl font-bold mb-4">{adminQuestionsData?.title}</h2>
                             <div className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-4">
-                                Total number of questions : 1
+                                {`Total number of questions : ${adminQuestionsData?.Questions?.length || 0}`}
                             </div>
-                            <p className="text-gray-600 mb-4">
-                                Test understanding of binary tree traversal methods, tree properties, and algorithms.
+                            <p className="text-gray-600 mb-4 text-justify">
+                                {adminQuestionsData?.description}
                             </p>
 
                             <div className="space-y-4">
@@ -114,24 +139,28 @@ export default function QuizSetEntryPage() {
                         </div>
 
                         {/** Right Column */}
-                        <div className="px-4">
-                            {adminQuestionsData?.map((questionData, idx) => (
-                                <AdminQuestionCard
-                                    key={idx}
-                                    index={questionData.index}
-                                    question={questionData?.question}
-                                    options={questionData?.options}
-                                    correctAnswer={questionData?.correctAnswer}
-                                    setSingleQuestion={setSingleQuestion}
-                                />
-                            ))
-                            }
+                        <div className="max-h-screen h-full">
+                            <div className="h-[calc(100vh-50px)] overflow-y-scroll ">
+                                <div className="px-4">
+                                    {adminQuestionsData?.Questions?.map((questionData, index) => (
+                                        <AdminQuestionCard
+                                            key={questionData?.id}
+                                            index={index + 1}
+                                            id={questionData?.id}
+                                            question={questionData?.question}
+                                            options={questionData?.options}
+                                            correctAnswer={questionData?.correctAnswer}
+                                            setSingleQuestion={setSingleQuestion}
+                                            onDelete={handleDelete}
+                                        />
+                                    ))
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-
         </main>
     )
 }
