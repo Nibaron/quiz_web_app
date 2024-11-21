@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import useAxios from '../hooks/useAxios';
 import { initialState, QuizReducer } from '../reducers/attend-quiz-reducer';
 import { actions } from '../actions';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { QuizIdContext } from '../context';
 
 
@@ -17,7 +17,8 @@ export default function QuizPage() {
     const [state, dispatch] = useReducer(QuizReducer, initialState);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [givenAnswer, setGivenAnswer] = useState("");
-    const [answers, setAnswers] = useState([]);
+    const [answers, setAnswers] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch({ type: actions.quiz.DATA_FETCHING });
@@ -43,11 +44,21 @@ export default function QuizPage() {
 
         fetchQuiz();
 
-    }, [api])
+    }, [api, quizId])
 
-    const handleSubmitQuiz = (payload) => {
-        console.log("Submitted Answers:", payload);
-    };
+
+    const handleSubmitQuiz = async (payload) => {
+        try {
+            const response = await api.post(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempt`, payload);
+
+            if (response.status === 200) {
+                navigate("/result_page");
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const { questions, title, description, stats } = state?.quizData?.data || {};
     const { question, options, id } = questions?.[currentQuestionIndex] || {};
@@ -133,10 +144,10 @@ export default function QuizPage() {
                                         className="w-1/2 text-center ml-auto block bg-primary text-white py-2 px-4 rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
                                         onClick={() => {
                                             setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
-                                            setAnswers((prevAnswers) => [
+                                            setAnswers((prevAnswers) => ({
                                                 ...prevAnswers,
-                                                { [id]: givenAnswer },
-                                            ]);
+                                                [id]: givenAnswer,
+                                            }));
                                             setGivenAnswer("");
                                         }}
                                     >
@@ -148,12 +159,12 @@ export default function QuizPage() {
                                         to="/result_page"
                                         className="w-1/2 text-center ml-auto block bg-red-700 text-white py-2 px-4 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
                                         onClick={() => {
-                                            const updatedAnswers = [
+                                            const updatedAnswers = {
                                                 ...answers,
-                                                { [id]: givenAnswer },
-                                            ];
+                                                [id]: givenAnswer
+                                            };
                                             const payload = {
-                                                "answers": { ...updatedAnswers }
+                                                answers: { ...updatedAnswers }
                                             };
                                             handleSubmitQuiz(payload);
                                         }}

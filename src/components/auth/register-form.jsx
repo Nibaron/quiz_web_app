@@ -44,6 +44,7 @@ export default function RegisterForm() {
                         type="text"
                         id="full_name"
                         placeholder="John Doe"
+                        autoComplete="Full_name"
                     />
                 </Field>
             </div>
@@ -57,11 +58,12 @@ export default function RegisterForm() {
                         type="email"
                         id="email"
                         placeholder="Email address"
+                        autoComplete="email"
                     />
                 </Field>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-between">
                 <div className="mb-6">
                     <Field label="Enter your Password" error={errors.password}>
                         <input
@@ -77,6 +79,7 @@ export default function RegisterForm() {
                             type="password"
                             id="password"
                             placeholder="Password"
+                            autoComplete="password"
                         />
                     </Field>
                 </div>
@@ -94,6 +97,7 @@ export default function RegisterForm() {
                             type="password"
                             id="confirmPassword"
                             placeholder="Confirm Password"
+                            autoComplete="confirm_password"
                         />
                     </Field>
                 </div>

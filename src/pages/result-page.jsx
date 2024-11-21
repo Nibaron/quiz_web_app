@@ -119,7 +119,7 @@ export default function ResultPage() {
                                         <p>Your Mark</p>
                                     </div>
                                     <div>
-                                        <CircularProgressBar percentage={(questionsData?.marks * 100 / questionsData?.quiz?.total_marks).toFixed(2)} />
+                                        <CircularProgressBar percentage={(questionsData?.marks * 100 / questionsData?.quiz?.total_marks).toFixed(1)} />
 
                                     </div>
                                 </div>

@@ -19,7 +19,7 @@ const RegistrationPage = () => {
 
                         <h2 className="text-3xl font-bold mb-1">Sign Up Now</h2>
                         <p className="text-xl mb-4 font-medium">Boost Your Learning Capabilities</p>
-                        <p className="mb-8 max-w-lg">
+                        <p className="mb-8 max-w-lg text-justify">
                             Logging in unlocks your personal progress tracker, letting you evaluate your performance and see how you
                             stack up against others. Whether you&apos;re preparing for exams, improving your knowledge, or simply having fun,
                             there&apos;s no better way to sharpen your mind.

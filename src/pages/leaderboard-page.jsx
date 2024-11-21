@@ -1,8 +1,42 @@
 import Header from '../components/layouts/header';
 import Avatar from '../assets/avater.webp';
+import { useContext, useEffect, useState } from 'react';
+import useAxios from '../hooks/useAxios';
+import { useAuth } from '../hooks/useAuth';
+import { QuizIdContext } from '../context';
 
 
 export default function LeaderBoardPage() {
+
+    const { quizId } = useContext(QuizIdContext);
+    const [leaderboardData, setLeaderboardData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const { api } = useAxios();
+    const { auth } = useAuth();
+
+    useEffect(() => {
+        const fetchResultData = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempts`);
+                if (response.status === 200) {
+                    setLeaderboardData(response.data.data);
+                }
+            } catch (err) {
+                console.error("Error:", err.message);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchResultData();
+    }, [quizId, api, auth]);
+
+    console.log(leaderboardData)
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error...</p>;
     return (
         <body className="bg-[#F5F3FF]  p-4">
             <Header />
@@ -38,57 +72,39 @@ export default function LeaderBoardPage() {
                         <div>
                             <h1 className="text-2xl font-bold">Leaderboard</h1>
                             <p className="mb-6">React Hooks Quiz</p>
-                            <ul className="space-y-4">
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <img src={Avatar} alt="SPD Smith" className="object-cover w-10 h-10 rounded-full mr-4" />
-                                        <div>
-                                            <h3 className="font-semibold">SPD Smith</h3>
-                                            <p className="text-sm text-gray-500">1st</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2">2,340</span>
-                                    </div>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <img src={Avatar} alt="JE Root" className="object-cover w-10 h-10 rounded-full mr-4" />
-                                        <div>
-                                            <h3 className="font-semibold">JE Root</h3>
-                                            <p className="text-sm text-gray-500">2nd</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2">2,540</span>
-                                    </div>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <img src={Avatar} alt="AN Cook" className="object-cover w-10 h-10 rounded-full mr-4" />
-                                        <div>
-                                            <h3 className="font-semibold">AN Cook</h3>
-                                            <p className="text-sm text-gray-500">3rd</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2">1,911</span>
-                                    </div>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <img src={Avatar} alt="KS Williamson" className="object-cover w-10 h-10 rounded-full mr-4" />
-                                        <div>
-                                            <h3 className="font-semibold">KS Williamson</h3>
-                                            <p className="text-sm text-gray-500">4th</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="mr-2">1,851</span>
-                                    </div>
-                                </li>
-                            </ul>
+                            {leaderboardData && leaderboardData.attempts ?
+                                <ul className="space-y-4">
+                                    {leaderboardData.attempts.map((attempt, index) => {
+                                        const correctCount = attempt.submitted_answers.reduce(
+                                            (count, answer, idx) =>
+                                                answer?.answer ===
+                                                    attempt.correct_answers[idx]?.answer
+                                                    ? count + 1
+                                                    : count,
+                                            0
+                                        );
+                                        const score = correctCount * 5;
+                                        return (
+                                            <li key={attempt.id} className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <img src={Avatar} alt="SPD Smith" className="object-cover w-10 h-10 rounded-full mr-4" />
+                                                    <div>
+                                                        <h3 className="font-semibold">{attempt.user.full_name}</h3>
+                                                        <p className="text-sm text-gray-500">{index + 1}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="mr-2">{score}</span>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                                :
+                                <p>No Data Found</p>
+                            }
                         </div>
+
                     </div>
                 </div>
             </main>

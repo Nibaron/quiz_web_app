@@ -54,6 +54,7 @@ const LoginForm = () => {
                         type="email"
                         id="email"
                         placeholder="Username or email address"
+                        autoComplete="email"
                     />
                 </Field>
             </div>
@@ -73,6 +74,7 @@ const LoginForm = () => {
                         type="password"
                         id="password"
                         placeholder="Password"
+                        autoComplete="password"
                     />
                 </Field>
             </div>
