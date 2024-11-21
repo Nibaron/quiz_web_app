@@ -12,10 +12,11 @@ export default function QuizSetEntryPage() {
     const [adminQuestionsData, setAdminQuestionsData] = useState([]);
     const [status, setStatus] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isEditing, setIsEditing] = useState(false);
     const [singleQuestion, setSingleQuestion] = useState({
         "question": "",
-        "options": ["", "", "", ""],
-        "correctAnswer": "#",
+        "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "correctAnswer": "option 1",
     })
 
     useEffect(() => {
@@ -40,13 +41,55 @@ export default function QuizSetEntryPage() {
             const { status } = await api.delete(`${import.meta.env.VITE_SERVER_BASE_URL}/admin/questions/${questionId}`);
             if (status === 200) {
                 setRefreshKey(prev => prev + 1);
+                setSingleQuestion({
+                    "id": "",
+                    "question": "",
+                    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                    "correctAnswer": "option 1",
+                });
             }
         } catch (err) {
             console.error("Error deleting quiz question:", err);
         }
+    };
+
+    const handleCreateQuestion = async () => {
+        try {
+            let url = `${import.meta.env.VITE_SERVER_BASE_URL}/admin/quizzes/${quizId}/questions`;
+            const { status } = await api.post(url, singleQuestion);
+            if (status === 201) {
+                setRefreshKey(prev => prev + 1);
+                setSingleQuestion({
+                    "id": "",
+                    "question": "",
+                    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                    "correctAnswer": "option 1",
+                });
+            }
+        } catch (err) {
+            console.error("Error adding new quiz question:", err);
+        }
     }
 
-    console.log(status);
+    const handleUpdateQuestion = async () => {
+        try {
+            let url = `${import.meta.env.VITE_SERVER_BASE_URL}/admin/questions/${singleQuestion.id}`;
+            const { status } = await api.patch(url, singleQuestion);
+            if (status === 200) {
+                setRefreshKey(prev => prev + 1);
+                setSingleQuestion({
+                    "id": "",
+                    "question": "",
+                    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                    "correctAnswer": "option 1",
+                });
+            }
+        } catch (err) {
+            console.error("Error updating quiz question:", err);
+        }
+    }
+
+    console.log(singleQuestion);
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen flex">
@@ -129,8 +172,11 @@ export default function QuizSetEntryPage() {
                                     </div>
                                 ))}
 
+
                                 <button
-                                    className="w-full bg-primary text-white text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors">
+                                    className="w-full bg-primary text-white text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors"
+                                    onClick={() => isEditing ? handleUpdateQuestion() : handleCreateQuestion()}
+                                >
                                     Save Quiz
                                 </button>
                             </div>
@@ -152,6 +198,7 @@ export default function QuizSetEntryPage() {
                                             correctAnswer={questionData?.correctAnswer}
                                             setSingleQuestion={setSingleQuestion}
                                             onDelete={handleDelete}
+                                            setIsEditing={setIsEditing}
                                         />
                                     ))
                                     }

@@ -1,12 +1,14 @@
 
-export default function AdminQuestionCard({ index, id, question, options, correctAnswer, setSingleQuestion, onDelete }) {
+export default function AdminQuestionCard({ index, id, question, options, correctAnswer, setSingleQuestion, onDelete, setIsEditing }) {
 
     const handleEdit = () => {
         setSingleQuestion({
+            id,
             question,
             options,
             correctAnswer,
         });
+        setIsEditing(true);
     };
 
 
