@@ -11,6 +11,8 @@ import QuizPage from './pages/quiz-page';
 import ResultPage from './pages/result-page';
 import UnauthorizedPage from './pages/unauthrized-page';
 import AdminRoutes from './routes/admin-routes';
+import QuizSetPage from './pages/admin-pages/quiz-set-page';
+import QuizSetEntryPage from './pages/admin-pages/quiz-set-entry-page';
 
 function App() {
 
@@ -20,13 +22,15 @@ function App() {
         {/**admin Route */}
         <Route element={<AdminRoutes />}>
           <Route element={<Dashboard />} path='/admin/dashboard' />
+          <Route element={<QuizSetPage />} path='/admin/quiz_set' />
+          <Route element={<QuizSetEntryPage />} path='/admin/quiz_set_entry_page' />
         </Route>
 
         {/** user Route */}
         <Route element={<PrivateRoutes />}>
-          <Route element={<LeaderBoardPage />} path='/leaderboard_page' />
           <Route element={<QuizPage />} path='/quiz_page' />
           <Route element={<ResultPage />} path='/result_page' />
+          <Route element={<LeaderBoardPage />} path='/leaderboard_page' />
         </Route>
 
         {/** guess Route */}
