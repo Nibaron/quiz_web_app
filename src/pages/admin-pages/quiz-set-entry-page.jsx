@@ -1,7 +1,13 @@
 import Sidebar from '../../components/admin-components/sidebar';
+import { useContext } from 'react';
+import { QuizIdContext } from '../../context';
 
 
 export default function QuizSetEntryPage() {
+    const { quizId } = useContext(QuizIdContext);
+
+    console.log(quizId);
+
     return (
         <main className="bg-[#F5F3FF] min-h-screen flex">
             <Sidebar />

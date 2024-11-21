@@ -23,8 +23,9 @@ export default function Dashboard() {
             }
         };
         fetchQuizData();
-    }, []);
-    console.log(adminQuizData)
+    }, [api]);
+
+    //console.log(adminQuizData);
 
     return (
         <main className="bg-gray-100 min-h-screen flex">
