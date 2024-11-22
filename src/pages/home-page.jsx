@@ -6,6 +6,8 @@ import Footer from '../components/layouts/footer';
 import { useEffect, useState } from 'react';
 import QuizCard from '../components/cards/quiz-card';
 import useAxios from '../hooks/useAxios';
+import Error from '../components/common/error';
+import Loading from '../components/common/loading';
 
 const HomePage = () => {
     const { auth } = useAuth();
@@ -25,8 +27,7 @@ const HomePage = () => {
                     setQuizData(response?.data?.data);
                 }
             } catch (err) {
-                console.error("Error:", err.message);
-                setError(err.message);
+                setError(err);
             } finally {
                 setLoading(false);
             }
@@ -35,21 +36,8 @@ const HomePage = () => {
     }, [api]);
 
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-lg font-semibold text-blue-500 animate-pulse">Loading...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-lg font-semibold text-red-500">An error occurred. Please try again.</p>
-            </div>
-        );
-    }
+    if (loading) return <Loading />
+    if (error) return <Error error={error} />
 
 
     return (

@@ -1,4 +1,4 @@
-const CircularProgressBar = ({ percentage = 0 }) => {
+const CircularProgressBar = ({ percentage }) => {
     const radius = 18;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (circumference * percentage) / 100;
@@ -25,7 +25,7 @@ const CircularProgressBar = ({ percentage = 0 }) => {
                 strokeWidth="4"
                 fill="none"
                 strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
+                strokeDashoffset={strokeDashoffset.toString()}
                 transform="rotate(-90 20 20)"
             />
             {/* Percentage Text */}

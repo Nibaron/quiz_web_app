@@ -4,29 +4,67 @@ import { useContext, useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../hooks/useAuth';
 import { QuizIdContext } from '../context';
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getOrdinalSuffix } from '../utils/common-functions';
 
 
 export default function LeaderBoardPage() {
 
     const { quizId } = useContext(QuizIdContext);
+    const location = useLocation();
     const [leaderboardData, setLeaderboardData] = useState(null);
+    const { questionsData } = location.state || {};
+    const [userPosition, setUserPosition] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    const [position] = useState(0);
     const { api } = useAxios();
     const { auth } = useAuth();
-    const location = useLocation();
-    const { questionsData } = location.state || {};
+    const navigate = useNavigate();
 
-    console.log(questionsData)
     useEffect(() => {
         const fetchResultData = async () => {
             try {
                 setLoading(true);
-                const response = await api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempts`);
+                const response = await api.get(
+                    `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempts`
+                );
                 if (response.status === 200) {
-                    setLeaderboardData(response?.data?.data);
+                    const attempts = response?.data?.data?.attempts || [];
+
+                    // Calculate scores dynamically
+                    const scoredData = attempts.map((attempt) => {
+                        const totalScore = attempt.submitted_answers.reduce((total, answer, idx) => {
+                            return answer?.answer === attempt.correct_answers[idx]?.answer
+                                ? total + (attempt.correct_answers[idx]?.marks || 0)
+                                : total;
+                        }, 0);
+
+                        return {
+                            ...attempt,
+                            score: totalScore,
+                        };
+                    });
+
+                    // Sort users by score (descending)
+                    const sortedData = scoredData.sort((a, b) => b.score - a.score);
+
+                    // Assign ranks with ties
+                    let rank = 1;
+                    const rankedData = sortedData.map((user, index, arr) => {
+                        if (index > 0 && user.score !== arr[index - 1].score) {
+                            rank = rank + 1;
+                        }
+                        return { ...user, rank };
+                    });
+
+                    // Find user's position
+                    const userIndex = rankedData.findIndex(
+                        (attempt) => attempt.user.full_name === auth?.user?.full_name
+                    );
+                    setUserPosition(userIndex >= 0 ? rankedData[userIndex].rank : null);
+
+                    // Slice top 5 users
+                    setLeaderboardData(rankedData.slice(0, 5));
                 }
             } catch (err) {
                 console.error("Error:", err.message);
@@ -35,14 +73,32 @@ export default function LeaderBoardPage() {
                 setLoading(false);
             }
         };
+
         fetchResultData();
     }, [quizId, api, auth]);
 
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error...</p>;
+    //console.log(leaderboardData)
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p className="text-lg font-semibold text-blue-500 animate-pulse bg-blue-300">Loading...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p className="text-lg font-semibold text-red-500 bg-red-300">An error occurred. Please try again.</p>
+                {navigate('/')}
+            </div>
+        );
+    }
+
     return (
-        <main className="bg-[#F5F3FF]  p-4">
+        <main className="bg-[#F5F3FF] p-4">
             <Header />
 
             <section className="min-h-[calc(100vh-50px)] flex items-center justify-center">
@@ -54,7 +110,7 @@ export default function LeaderBoardPage() {
                                 <img src={Avatar} alt="Profile Pic"
                                     className="w-20 h-20 rounded-full border-4 border-white mb-4 object-cover" />
                                 <h2 className="text-2xl font-bold">{auth?.user?.full_name}</h2>
-                                <p className="text-xl">{`${position} Position`}</p>
+                                <p className="text-xl">{`${getOrdinalSuffix(userPosition)} Position`}</p>
                             </div>
                             <div className="grid grid-cols-3 gap-4 mb-6">
                                 <div className="text-center">
@@ -77,38 +133,40 @@ export default function LeaderBoardPage() {
                             <h1 className="text-2xl font-bold">Leaderboard</h1>
                             <p className="mb-6">React Hooks Quiz</p>
 
-                            {leaderboardData && leaderboardData.attempts ?
+                            {leaderboardData?.length > 0 ? (
                                 <ul className="space-y-4">
-                                    {leaderboardData.attempts.map((attempt, index) => {
-                                        const correctCount = attempt.submitted_answers.reduce(
-                                            (count, answer, idx) =>
-                                                answer?.answer ===
-                                                    attempt.correct_answers[idx]?.answer
-                                                    ? count + 1
-                                                    : count,
-                                            0
-                                        );
-                                        const score = correctCount * 5;
-                                        return (
-                                            <li key={attempt.id} className={`flex items-center justify-between ${auth.user.full_name === attempt.user.full_name ? 'border-2 rounded-lg bg-green-200' : ''}`}
-                                            >
-                                                <div className="flex items-center">
-                                                    <img src={Avatar} alt="SPD Smith" className="object-cover w-10 h-10 rounded-full mr-4" />
-                                                    <div>
-                                                        <h3 className="font-semibold">{attempt.user.full_name}</h3>
-                                                        <p className="text-bold text-gray-500">{index + 1}</p>
-                                                    </div>
+                                    {leaderboardData.map((user) => (
+                                        <li
+                                            key={user.id}
+                                            className={`flex items-center justify-between ${auth?.user?.full_name === user?.user?.full_name
+                                                ? 'border-2 rounded-lg bg-green-200'
+                                                : ''
+                                                }`}
+                                        >
+                                            <div className="flex items-center">
+                                                <img
+                                                    src={Avatar}
+                                                    alt="User Avatar"
+                                                    className="object-cover w-10 h-10 rounded-full mr-4"
+                                                />
+                                                <div>
+                                                    <h3 className="font-semibold">
+                                                        {user?.user?.full_name}
+                                                    </h3>
+                                                    <p className="text-bold text-gray-500">
+                                                        {getOrdinalSuffix(user?.rank)}
+                                                    </p>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <span className="mr-2">{score}</span>
-                                                </div>
-                                            </li>
-                                        );
-                                    })}
+                                            </div>
+                                            <div className="flex items-center">
+                                                <span className="mr-2">{user?.score}</span>
+                                            </div>
+                                        </li>
+                                    ))}
                                 </ul>
-                                :
+                            ) : (
                                 <p>No Data Found</p>
-                            }
+                            )}
                         </div>
 
                     </div>

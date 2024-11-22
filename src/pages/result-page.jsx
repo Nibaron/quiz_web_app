@@ -6,6 +6,8 @@ import useAxios from '../hooks/useAxios';
 import Question from '../components/common/question';
 import { useAuth } from '../hooks/useAuth';
 import CircularProgressBar from '../components/circular-progress-bar';
+import Loading from '../components/common/loading';
+import Error from '../components/common/error';
 
 export default function ResultPage() {
     const { quizId } = useContext(QuizIdContext);
@@ -25,19 +27,22 @@ export default function ResultPage() {
                     api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempts`),
                     api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}`),
                 ]);
-                if (response1.status === 200 && response2.status === 200) {
 
-                    // Push the submitted answer field to the specific question
-                    const submitted_answers = response1?.data?.data?.attempts.filter(attempt => attempt.user.full_name === auth?.user?.full_name)?.[0].submitted_answers;
+                if (response1.status === 200 && response2.status === 200) {
+                    const attempts = response1?.data?.data?.attempts || [];
+                    const userAttempt = attempts.find(
+                        (attempt) => attempt.user.full_name === auth?.user?.full_name
+                    );
+
+                    const submitted_answers = userAttempt?.submitted_answers || [];
 
                     const updatedQuestions = response2?.data?.data?.questions.map((question) => {
-                        const submittedAnswer = submitted_answers?.find(
-                            (attempt) => attempt.question_id === question.id
+                        const submittedAnswer = submitted_answers.find(
+                            (answer) => answer.question_id === question.id
                         )?.answer;
                         return { ...question, submittedAnswer };
                     });
 
-                    // Calculate correct, wrong, and total marks
                     let correct = 0;
                     let wrong = 0;
                     let marks = 0;
@@ -56,7 +61,7 @@ export default function ResultPage() {
                         questions: updatedQuestions,
                         correct,
                         wrong,
-                        marks
+                        marks,
                     });
                 }
             } catch (err) {
@@ -66,14 +71,13 @@ export default function ResultPage() {
                 setLoading(false);
             }
         };
+
         fetchResultData();
     }, [quizId, api, auth]);
 
-    //console.log(questionsData)
+    if (loading) return <Loading />
+    if (error) return <Error error={error} />
 
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error...</p>;
 
     return (
         <main className="bg-background text-foreground min-h-screen">
