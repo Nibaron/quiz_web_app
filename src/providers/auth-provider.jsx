@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { AuthContext } from "../context";
 
 const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(() => {
-        // Initialize state from local storage
-        const savedAuth = localStorage.getItem("auth");
-        return savedAuth ? JSON.parse(savedAuth) : {};
-    });
+    // Initialize state from local storage
+    const [auth, setAuth] = useState(JSON.parse(localStorage.getItem("auth")) || {});
 
     useEffect(() => {
         // Store auth data in local storage whenever it changes
