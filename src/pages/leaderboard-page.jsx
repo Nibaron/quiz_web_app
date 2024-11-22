@@ -4,8 +4,10 @@ import { useContext, useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../hooks/useAuth';
 import { QuizIdContext } from '../context';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { getOrdinalSuffix } from '../utils/common-functions';
+import Loading from '../components/common/loading';
+import Error from '../components/common/error';
 
 
 export default function LeaderBoardPage() {
@@ -19,7 +21,6 @@ export default function LeaderBoardPage() {
     const [error, setError] = useState(false);
     const { api } = useAxios();
     const { auth } = useAuth();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchResultData = async () => {
@@ -66,9 +67,8 @@ export default function LeaderBoardPage() {
                     // Slice top 5 users
                     setLeaderboardData(rankedData.slice(0, 5));
                 }
-            } catch (err) {
-                console.error("Error:", err.message);
-                setError(err.message);
+            } catch (error) {
+                setError(error);
             } finally {
                 setLoading(false);
             }
@@ -78,24 +78,8 @@ export default function LeaderBoardPage() {
     }, [quizId, api, auth]);
 
 
-    //console.log(leaderboardData)
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-lg font-semibold text-blue-500 animate-pulse bg-blue-300">Loading...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-lg font-semibold text-red-500 bg-red-300">An error occurred. Please try again.</p>
-                {navigate('/')}
-            </div>
-        );
-    }
+    if (loading) return <Loading />
+    if (error) return <Error error={error} />
 
     return (
         <main className="bg-[#F5F3FF] p-4">
@@ -131,7 +115,7 @@ export default function LeaderBoardPage() {
                         {/**-- Right Column --*/}
                         <div>
                             <h1 className="text-2xl font-bold">Leaderboard</h1>
-                            <p className="mb-6">React Hooks Quiz</p>
+                            <p className="mb-6">{questionsData?.quiz?.title}</p>
 
                             {leaderboardData?.length > 0 ? (
                                 <ul className="space-y-4">

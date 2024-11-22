@@ -65,8 +65,7 @@ export default function ResultPage() {
                     });
                 }
             } catch (err) {
-                console.error("Error:", err.message);
-                setError(err.message);
+                setError(err);
             } finally {
                 setLoading(false);
             }
