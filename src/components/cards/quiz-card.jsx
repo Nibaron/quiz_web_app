@@ -7,8 +7,6 @@ export default function QuizCard({ id, title, details, backgroundImg, is_attempt
     const linkDestination = is_attempted ? "/result_page" : "/quiz_page";
     const { setQuizId } = useContext(QuizIdContext);
 
-    console.log(`id: ${id} , is_attempted: ${is_attempted}`)
-
     return (
         <Link to={linkDestination}
             className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative"

@@ -1,4 +1,3 @@
-
 export default function AdminQuestionCard({ index, id, question, options, correctAnswer, setSingleQuestion, onDelete, setIsEditing }) {
 
     const handleEdit = () => {

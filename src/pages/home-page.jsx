@@ -5,10 +5,11 @@ import Header from '../components/layouts/header';
 import Footer from '../components/layouts/footer';
 import { useEffect, useState } from 'react';
 import QuizCard from '../components/cards/quiz-card';
-import axios from 'axios';
+import useAxios from '../hooks/useAxios';
 
 const HomePage = () => {
     const { auth } = useAuth();
+    const { api } = useAxios();
     const [role] = useState(auth?.user?.role ?? "guest");
 
     const [quizData, setQuizData] = useState([]);
@@ -19,7 +20,7 @@ const HomePage = () => {
         const fetchQuizData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes`);
+                const response = await api.get(`${import.meta.env.VITE_SERVER_BASE_URL}/quizzes`);
                 if (response.status === 200) {
                     setQuizData(response?.data?.data);
                 }
@@ -31,17 +32,31 @@ const HomePage = () => {
             }
         };
         fetchQuizData();
-    }, []);
+    }, [api]);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error...</p>;
-    console.log(quizData)
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p className="text-lg font-semibold text-blue-500 animate-pulse">Loading...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p className="text-lg font-semibold text-red-500">An error occurred. Please try again.</p>
+            </div>
+        );
+    }
+
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen">
             <div className="container mx-auto py-3">
                 <Header />
-                {role === 'user' && <Welcome />}
+                {role !== 'guest' && <Welcome />}
 
                 <div className="bg-white p-6 rounded-md h-full">
                     <section>

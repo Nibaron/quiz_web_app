@@ -18,7 +18,7 @@ export default function Question({ index, title, options, answer, submitted_answ
                                 name={`answer${index}`}
                                 className="form-radio text-buzzr-purple"
                                 checked={option === answer}
-                                disabled={option !== answer}
+                                readOnly
                             />
                             <span>{option}</span>
                         </label>

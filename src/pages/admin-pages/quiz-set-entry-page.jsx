@@ -14,9 +14,10 @@ export default function QuizSetEntryPage() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
     const [singleQuestion, setSingleQuestion] = useState({
+        "id": "",
         "question": "",
-        "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-        "correctAnswer": "option 1",
+        "options": ["", "", "", ""],
+        "correctAnswer": "",
     })
 
     useEffect(() => {
@@ -60,10 +61,10 @@ export default function QuizSetEntryPage() {
             if (status === 201) {
                 setRefreshKey(prev => prev + 1);
                 setSingleQuestion({
-                    "id": "",
+                    "id": null,
                     "question": "",
-                    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-                    "correctAnswer": "option 1",
+                    "options": ["", "", "", ""],
+                    "correctAnswer": "#",
                 });
             }
         } catch (err) {
@@ -78,10 +79,10 @@ export default function QuizSetEntryPage() {
             if (status === 200) {
                 setRefreshKey(prev => prev + 1);
                 setSingleQuestion({
-                    "id": "",
+                    "id": null,
                     "question": "",
-                    "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-                    "correctAnswer": "option 1",
+                    "options": ["", "", "", ""],
+                    "correctAnswer": "#",
                 });
             }
         } catch (err) {
@@ -89,7 +90,7 @@ export default function QuizSetEntryPage() {
         }
     }
 
-    console.log(singleQuestion);
+    //console.log(singleQuestion);
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen flex">
@@ -120,10 +121,10 @@ export default function QuizSetEntryPage() {
                                 {adminQuestionsData?.description}
                             </p>
 
-                            <div className="space-y-4">
+                            <form className="space-y-4" onSubmit={() => isEditing ? handleUpdateQuestion() : handleCreateQuestion()}>
                                 <div className='flex justify-between'>
                                     <h2 className="text-xl font-bold text-foreground">Create Quiz</h2>
-                                    <button className="p-2 font-bold rounded-md bg-green-500">Publish Quiz</button>
+                                    <button className="p-2 font-bold rounded-md bg-green-500">{status === 'draft' ? 'Publish Quiz' : 'Unpublish Quiz'}</button>
                                 </div>
 
                                 <div>
@@ -135,6 +136,7 @@ export default function QuizSetEntryPage() {
                                         onChange={(e) =>
                                             setSingleQuestion((prev) => ({ ...prev, question: e.target.value }))
                                         }
+                                        required
                                     />
                                 </div>
 
@@ -154,6 +156,7 @@ export default function QuizSetEntryPage() {
                                                 setSingleQuestion((prev) => ({ ...prev, correctAnswer: option }))
                                             }
                                             className="text-primary focus:ring-0 w-4 h-4"
+                                            required
                                         />
                                         <input
                                             type="text"
@@ -168,6 +171,7 @@ export default function QuizSetEntryPage() {
                                             }}
                                             className="w-full p-2 bg-transparent rounded-md text-foreground outline-none focus:ring-0"
                                             placeholder={`Option ${idx + 1}`}
+                                            required
                                         />
                                     </div>
                                 ))}
@@ -175,11 +179,11 @@ export default function QuizSetEntryPage() {
 
                                 <button
                                     className="w-full bg-primary text-white text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors"
-                                    onClick={() => isEditing ? handleUpdateQuestion() : handleCreateQuestion()}
+                                    type='submit'
                                 >
                                     Save Quiz
                                 </button>
-                            </div>
+                            </form>
 
 
                         </div>
@@ -188,7 +192,7 @@ export default function QuizSetEntryPage() {
                         <div className="max-h-screen h-full">
                             <div className="h-[calc(100vh-50px)] overflow-y-scroll ">
                                 <div className="px-4">
-                                    {adminQuestionsData?.Questions?.map((questionData, index) => (
+                                    {singleQuestion && adminQuestionsData?.Questions?.map((questionData, index) => (
                                         <AdminQuestionCard
                                             key={questionData?.id}
                                             index={index + 1}

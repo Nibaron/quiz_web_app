@@ -1,4 +1,4 @@
-const CircularProgressBar = ({ percentage }) => {
+const CircularProgressBar = ({ percentage = 0 }) => {
     const radius = 18;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (circumference * percentage) / 100;

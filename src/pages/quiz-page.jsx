@@ -65,7 +65,7 @@ export default function QuizPage() {
 
 
     return (
-        <body className="bg-[#F5F3FF] min-h-screen">
+        <main className="bg-[#F5F3FF] min-h-screen">
             <div className="container mx-auto py-3">
                 <header className="flex justify-between items-center mb-8">
                     <Link to="/" >
@@ -76,7 +76,7 @@ export default function QuizPage() {
                     </button>
                 </header>
 
-                <main className="max-w-8xl mx-auto h-[calc(100vh-10rem)]">
+                <section className="max-w-8xl mx-auto h-[calc(100vh-10rem)]">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 h-full">
                         {/** Left Column */}
                         <div className="lg:col-span-1 bg-white rounded-md p-6 h-full flex flex-col">
@@ -177,10 +177,10 @@ export default function QuizPage() {
                             </div>
                         </div>
                     </div>
-                </main>
+                </section>
             </div >
 
             <Footer />
-        </body >
+        </main >
     )
 }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LogoWhite from '../assets/logo-white.svg';
 import { useContext, useEffect, useState } from 'react';
 import { QuizIdContext } from '../context';
@@ -14,6 +14,7 @@ export default function ResultPage() {
     const [error, setError] = useState(false);
     const { api } = useAxios();
     const { auth } = useAuth();
+    const navigate = useNavigate();
 
     //fetch attempted quiz result Data
     useEffect(() => {
@@ -75,7 +76,7 @@ export default function ResultPage() {
     if (error) return <p>Error...</p>;
 
     return (
-        <body className="bg-background text-foreground min-h-screen">
+        <main className="bg-background text-foreground min-h-screen">
             <div className="flex min-h-screen overflow-hidden">
                 <Link to="/"><img src={LogoWhite} className="max-h-11 fixed left-6 top-6 z-50" /></Link>
                 {/** Left side */}
@@ -107,10 +108,10 @@ export default function ResultPage() {
                                         </div>
                                     </div>
 
-                                    <Link to="/leaderboard_page"
+                                    <button onClick={() => navigate('/leaderboard_page', { state: { questionsData } })}
                                         className=" bg-secondary py-3 rounded-md hover:bg-secondary/90 transition-colors text-lg font-medium underline text-white">
                                         View Leaderboard
-                                    </Link>
+                                    </button>
                                 </div>
 
                                 <div className="w-1/2 bg-primary/80 rounded-md border border-white/20 flex items-center p-4">
@@ -146,6 +147,6 @@ export default function ResultPage() {
                     </div>
                 </div>
             </div>
-        </body>
+        </main >
     )
 }

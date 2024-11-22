@@ -47,6 +47,7 @@ const useAxios = () => {
                         return axios(originalRequest);
                     } catch (error) {
                         setAuth({});
+                        localStorage.removeItem("auth");
                         throw error;
                     }
                 }

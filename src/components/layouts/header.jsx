@@ -8,6 +8,7 @@ const Header = () => {
     const { setAuth } = useAuth();
     const handleLogout = () => {
         setAuth({});
+        localStorage.removeItem("auth");
         navigate("/login");
     }
 
