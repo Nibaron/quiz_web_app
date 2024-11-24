@@ -1,14 +1,24 @@
+import { Link, useNavigate } from 'react-router-dom';
 import Avatar from '../../assets/avater.webp';
 import LogoWhite from '../../assets/logo-white.svg';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Sidebar() {
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        setAuth({});
+        localStorage.removeItem("auth");
+        navigate("/login");
+    }
     return (
 
         <aside className="min-w-64 bg-primary p-6 flex flex-col">
             <div className="mb-10">
-                <img src={LogoWhite} className="h-7" />
+                <Link to='/admin/dashboard'>
+                    <img src={LogoWhite} className="h-7" />
+                </Link>
             </div>
             <nav className="flex-grow">
                 <ul className="space-y-2">
@@ -31,7 +41,12 @@ export default function Sidebar() {
                     </li>
 
                     <li>
-                        <a href="#" className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary">Logout</a>
+                        <div
+                            className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </div>
                     </li>
                 </ul>
             </nav>

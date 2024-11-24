@@ -8,10 +8,11 @@ import { initialState, QuizReducer } from '../reducers/attend-quiz-reducer';
 import { actions } from '../actions';
 import { Link, useNavigate } from 'react-router-dom';
 import { QuizIdContext } from '../context';
+import Error from '../components/common/error';
 
 
 export default function QuizPage() {
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
     const { api } = useAxios();
     const { quizId } = useContext(QuizIdContext);
     const [state, dispatch] = useReducer(QuizReducer, initialState);
@@ -46,6 +47,12 @@ export default function QuizPage() {
 
     }, [api, quizId])
 
+    const handleLogout = () => {
+        setAuth({});
+        localStorage.removeItem("auth");
+        navigate("/login");
+    }
+
 
     const handleSubmitQuiz = async (payload) => {
         try {
@@ -63,6 +70,7 @@ export default function QuizPage() {
     const { questions, title, description, stats } = state?.quizData?.data || {};
     const { question, options, id } = questions?.[currentQuestionIndex] || {};
 
+    if (state.error) return <Error error={state.error} />
 
     return (
         <main className="bg-[#F5F3FF] min-h-screen">
@@ -71,7 +79,11 @@ export default function QuizPage() {
                     <Link to="/" >
                         <img src={Logo} className="h-7" />
                     </Link>
-                    <button className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors" style={{ fontFamily: 'Jaro' }}>
+                    <button
+                        className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
+                        style={{ fontFamily: 'Jaro' }}
+                        onClick={handleLogout}
+                    >
                         Logout
                     </button>
                 </header>
