@@ -73,6 +73,7 @@ export default function QuizSetEntryPage() {
 
                 setRefreshKey(prev => prev + 1);
                 setSingleQuestion(defaultQuestion);
+                reset(defaultQuestion);
             }
         } catch (err) {
             console.error('Error deleting quiz question:', err);
