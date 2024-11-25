@@ -4,8 +4,11 @@ import { BackIcon } from '../../assets/icons';
 import { useForm } from 'react-hook-form';
 import Field from '../../components/common/fields';
 import useAxios from '../../hooks/useAxios';
+import { useContext } from 'react';
+import { QuizIdContext } from '../../context';
 
 export default function QuizSetPage() {
+    const { setQuizId } = useContext(QuizIdContext);
     const {
         register,
         handleSubmit,
@@ -20,6 +23,7 @@ export default function QuizSetPage() {
             const response = await api.post(`${import.meta.env.VITE_SERVER_BASE_URL}/admin/quizzes/`, formData);
 
             if (response.status === 201) {
+                setQuizId(response?.data?.data?.id);
                 navigate("/admin/quiz_set_entry_page");
             }
         } catch (error) {

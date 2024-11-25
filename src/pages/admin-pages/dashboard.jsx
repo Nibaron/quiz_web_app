@@ -10,6 +10,7 @@ export default function Dashboard() {
 
     const { api } = useAxios();
     const [adminQuizData, setAdminQuizData] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         const fetchQuizData = async () => {
@@ -23,7 +24,7 @@ export default function Dashboard() {
             }
         };
         fetchQuizData();
-    }, [api]);
+    }, [api, refreshKey]);
 
     //console.log(adminQuizData);
 
@@ -57,6 +58,7 @@ export default function Dashboard() {
                             id={quizData.id}
                             title={quizData.title}
                             description={quizData.description}
+                            setRefreshKey={setRefreshKey}
                         />
                     )
                     )}

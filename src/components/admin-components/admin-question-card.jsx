@@ -1,11 +1,15 @@
-export default function AdminQuestionCard({ index, id, question, options, correctAnswer, setSingleQuestion, onDelete, setIsEditing }) {
+export default function AdminQuestionCard({ index, questionData, setSingleQuestion, onDelete, setIsEditing }) {
+
+    const { id, question, options, correctAnswer } = questionData;
 
     const handleEdit = () => {
+        const selectedOption = options.findIndex(option => option === correctAnswer);
+
         setSingleQuestion({
             id,
             question,
             options,
-            correctAnswer,
+            selectedOption
         });
         setIsEditing(true);
     };
